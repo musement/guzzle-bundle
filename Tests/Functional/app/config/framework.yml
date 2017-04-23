@@ -1,7 +1,10 @@
 framework:
-    secret:        test
-    router:        { resource: "%kernel.root_dir%/%kernel.test_case%/routing.yml" }
+    secret: test
+    router:
+        resource: "%kernel.root_dir%/%kernel.test_case%/routing.yml"
     test: ~
     default_locale: en
+    translator:
+        fallbacks: [en]
     session:
-        storage_id:     session.storage.mock_file
+        storage_id: session.storage.mock_file

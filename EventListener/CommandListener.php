@@ -62,8 +62,7 @@ class CommandListener implements EventSubscriberInterface
         SerializerInterface $serializer = null,
         RequestVisitorInterface $requestBodyVisitor,
         ResponseParserInterface $responseParser
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->requestBodyVisitor = $requestBodyVisitor;
         $this->responseParser = $responseParser;
@@ -81,7 +80,7 @@ class CommandListener implements EventSubscriberInterface
             $event['command']->setResponseParser($this->responseParser);
         }
 
-        if ($event['command'] instanceof JMSSerializerAwareCommandInterface && null !== $this->serializer) {
+        if (null !== $this->serializer && $event['command'] instanceof JMSSerializerAwareCommandInterface) {
             $event['command']->setSerializer($this->serializer);
         }
     }

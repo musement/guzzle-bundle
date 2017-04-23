@@ -11,19 +11,17 @@
 
 namespace Misd\GuzzleBundle\Tests\Functional;
 
-use Symfony\Component\HttpFoundation\Request as SfRequest;
-use Symfony\Component\HttpFoundation\Response as SfResponse;
-
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\Message\Response as GuzzleResponse;
-
 use Misd\GuzzleBundle\DataCollector\GuzzleDataCollector;
+use Symfony\Component\HttpFoundation\Request as SfRequest;
+use Symfony\Component\HttpFoundation\Response as SfResponse;
 
 class GuzzleDataCollectorTest extends TestCase
 {
     public function testNoDuplicateLogs()
     {
-        $adapter = $this->getMock('Guzzle\Log\ArrayLogAdapter');
+        $adapter = $this->createMock('Guzzle\Log\ArrayLogAdapter');
         $adapter->expects($this->any())
                 ->method('getLogs')
                 ->will($this->returnValue(array(
@@ -40,7 +38,7 @@ class GuzzleDataCollectorTest extends TestCase
 
     public function testEmptyArrayWhenNoRequests()
     {
-        $adapter = $this->getMock('Guzzle\Log\ArrayLogAdapter');
+        $adapter = $this->createMock('Guzzle\Log\ArrayLogAdapter');
         $collector = new GuzzleDataCollector($adapter);
 
         $this->assertEquals(array(), $collector->getRequests());

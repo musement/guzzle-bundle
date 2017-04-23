@@ -21,10 +21,20 @@ use Symfony\Component\HttpKernel\Kernel;
 
 abstract class TestCase extends PHPUnit_Framework_TestCase
 {
-    protected static function getTestCases()
-    {
-        return array('Basic', 'JMSSerializerBundle', 'SensioFrameworkExtraBundle');
-    }
+    /**
+     * @var Client[]
+     */
+    protected static $clients = array();
+
+    /**
+     * @var MockPlugin
+     */
+    protected static $mock;
+
+    /**
+     * @var Kernel[]
+     */
+    private static $kernels = array();
 
     public static function setUpBeforeClass()
     {
@@ -37,6 +47,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         self::$mock = new MockPlugin();
 
         foreach (self::getTestCases() as $testCase) {
+            /** @var Client $client */
             $client = self::getContainer($testCase)->get('guzzle.client');
             $client->setDescription(ServiceDescription::factory(__DIR__ . '/../Fixtures/config/client.json'));
             $client->addSubscriber(self::$mock);
@@ -53,10 +64,10 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         parent::tearDownAfterClass();
     }
 
-    /**
-     * @var Kernel[]
-     */
-    private static $kernels = array();
+    protected static function getTestCases()
+    {
+        return array('Basic', 'JMSSerializerBundle', 'SensioFrameworkExtraBundle');
+    }
 
     protected static function getKernel($testCase)
     {
@@ -74,6 +85,15 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         }
 
         return self::$kernels[$testCase]->getContainer();
+    }
+
+    protected static function getClient($testCase)
+    {
+        if (false === isset(self::$clients[$testCase])) {
+            throw new InvalidArgumentException(sprintf('Unknown testCase %s', $testCase));
+        }
+
+        return self::$clients[$testCase];
     }
 
     private static function deleteTmpDir($testCase)
@@ -105,23 +125,4 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
 
         return $kernel;
     }
-
-    /**
-     * @var Client[]
-     */
-    protected static $clients = array();
-    /**
-     * @var MockPlugin
-     */
-    protected static $mock;
-
-    protected static function getClient($testCase)
-    {
-        if (false === isset(self::$clients[$testCase])) {
-            throw new InvalidArgumentException(sprintf('Unknown testCase %s', $testCase));
-        }
-
-        return self::$clients[$testCase];
-    }
-
 }

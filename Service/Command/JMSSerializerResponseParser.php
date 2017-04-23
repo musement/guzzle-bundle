@@ -94,12 +94,12 @@ class JMSSerializerResponseParser implements ResponseParserInterface
     protected function deserialize(CommandInterface $command, Response $response, $contentType)
     {
         if ($this->serializer) {
+            $serializerContentType = null;
             if (false !== stripos($contentType, 'json')) {
                 $serializerContentType = 'json';
             } elseif (false !== stripos($contentType, 'xml')) {
                 $serializerContentType = 'xml';
             } else {
-                $serializerContentType = null;
             }
 
             if (null !== $serializerContentType &&
@@ -119,7 +119,7 @@ class JMSSerializerResponseParser implements ResponseParserInterface
                 }
 
                 return $this->serializer->deserialize(
-                    $response->getBody(),
+                    $response->getBody(true),
                     $command->getOperation()->getResponseClass(),
                     $serializerContentType,
                     $context

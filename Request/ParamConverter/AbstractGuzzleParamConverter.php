@@ -196,8 +196,8 @@ abstract class AbstractGuzzleParamConverter implements ParamConverterInterface
 
         if (null !== $client && null !== $command) {
             return array('client' => $client, 'command' => $command);
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

@@ -12,9 +12,13 @@
 namespace Misd\GuzzleBundle\DependencyInjection;
 
 use Guzzle\Common\Version;
+use Guzzle\Service\Builder\ServiceBuilder;
+use Guzzle\Service\Command\OperationResponseParser;
+use Guzzle\Service\Description\ServiceDescription;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder,
-    Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -51,7 +55,7 @@ class MisdGuzzleExtension extends Extension
                 ),
                 'configuration'
             );
-            if ('Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter' == $parameter->getClass()->getName()) {
+            if ('Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter' === $parameter->getClass()->getName()) {
                 $container->setParameter(
                     'misd_guzzle.param_converter.class',
                     'Misd\GuzzleBundle\Request\ParamConverter\GuzzleParamConverter3x'
@@ -82,8 +86,8 @@ class MisdGuzzleExtension extends Extension
             $container->setParameter('misd_guzzle.cache.filesystem.path', $config['filesystem_cache']['path']);
         }
 
-        $logFormat = $config['log']['format'];
-        if (in_array($logFormat, array('default', 'debug', 'short'))) {
+        $logFormat = strtolower($config['log']['format']);
+        if (in_array($logFormat, array('default', 'debug', 'short'), true)) {
             $logFormat = constant(sprintf('Guzzle\Log\MessageFormatter::%s_FORMAT', strtoupper($logFormat)));
         }
         $container->setParameter('misd_guzzle.log.format', $logFormat);
@@ -95,5 +99,29 @@ class MisdGuzzleExtension extends Extension
         ) {
             Version::$emitWarnings = $container->getParameter('kernel.debug');
         }
+
+        $responseParserClass = OperationResponseParser::class;
+        $responseParserDefinition = new Definition($responseParserClass);
+        $guzzleServiceBuilderDefinition = $container->getDefinition('guzzle.service_builder');
+        $guzzleServiceBuilderClass = ServiceBuilder::class;
+        if (method_exists(Definition::class, 'setFactory')) {
+            $responseParserDefinition->setFactory([$responseParserClass, 'getInstance']);
+            $guzzleServiceBuilderDefinition->setFactory([$guzzleServiceBuilderClass, 'factory']);
+        } else {
+            $responseParserDefinition
+                ->setClass($responseParserClass)
+                ->setFactoryMethod('getInstance')
+            ;
+            $guzzleServiceBuilderDefinition
+                ->setClass($guzzleServiceBuilderClass)
+                ->setFactoryMethod('factory')
+            ;
+        }
+
+        $container->set('misd_guzzle.response.parser.fallback', $responseParserDefinition);
+
+        $responseDefinition = $container->getDefinition('misd_guzzle.response.parser');
+        $responseDefinition->replaceArgument(1, $responseParserDefinition);
+
     }
 }
