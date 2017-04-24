@@ -1,17 +1,11 @@
 GuzzleBundle
 ============
 
-[![Build Status](https://travis-ci.org/misd-service-development/guzzle-bundle.png?branch=master)](http://travis-ci.org/misd-service-development/guzzle-bundle)
+[![Build Status](https://travis-ci.org/musement/guzzle-bundle.png?branch=master)](http://travis-ci.org/musement/guzzle-bundle)
 
-This bundle integrates [Guzzle 3](http://guzzle3.readthedocs.org/) into your Symfony2 application, which takes the pain out of sending HTTP requests and the redundancy out of creating web service clients.
+This bundle integrates [Guzzle 3](http://guzzle3.readthedocs.org/) into your Symfony2 application, which takes the pain out of sending HTTP requests & the redundancy out of creating web service clients.
 
-It can also integrate with the [JMSSerializerBundle](http://jmsyst.com/bundles/JMSSerializerBundle) for easy object (de)serialization, and provides a param converter for use with the [SensioFrameworkExtraBundle](http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/).
-
-Authors
--------
-
-* Chris Wilkinson <chris.wilkinson@admin.cam.ac.uk>
-* [The Symfony and Guzzle communities](https://github.com/misd-service-development/guzzle-bundle/contributors)
+It can also integrate with the [JMSSerializerBundle](http://jmsyst.com/bundles/JMSSerializerBundle) for easy object (de)serialization & provides a param converter for use with the [SensioFrameworkExtraBundle](http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/).
 
 Documentation
 -------------
@@ -28,4 +22,11 @@ All the installation instructions are located in the [documentation](Resources/d
 Reporting an issue or a feature request
 ---------------------------------------
 
-Issues and feature requests are tracked in the [Github issue tracker](https://github.com/misd-service-development/guzzle-bundle/issues).
+Issues and feature requests are tracked in the [Github issue tracker](https://github.com/musement/guzzle-bundle/issues).
+
+Authors
+-------
+
+* Chris Wilkinson <chris.wilkinson@admin.cam.ac.uk>
+* Joseph Bielawski <stloyd+gh@gmail.com>
+* [The Symfony & Guzzle communities](https://github.com/musement/guzzle-bundle/contributors)
