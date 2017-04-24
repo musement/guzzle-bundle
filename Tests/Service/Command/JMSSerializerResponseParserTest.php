@@ -12,8 +12,11 @@
 namespace Misd\GuzzleBundle\Tests\Service\Command;
 
 use Guzzle\Http\Message\Response;
+use Guzzle\Service\Command\CommandInterface;
+use Guzzle\Service\Command\ResponseParserInterface;
 use Guzzle\Service\Description\OperationInterface;
 use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializerInterface;
 use Misd\GuzzleBundle\Service\Command\JMSSerializerResponseParser;
 
 class JMSSerializerResponseParserTest extends \PHPUnit_Framework_TestCase
@@ -25,31 +28,50 @@ class JMSSerializerResponseParserTest extends \PHPUnit_Framework_TestCase
         $expectedContext->setVersion(1);
         $expectedContext->enableMaxDepthChecks();
 
-        $operation = $this->createMock('Guzzle\Service\Description\OperationInterface');
-        $operation->expects($this->any())->method('getResponseType')->will($this->returnValue(OperationInterface::TYPE_CLASS));
-        $operation->expects($this->any())->method('getResponseClass')->will($this->returnValue('ResponseClass'));
-
-        $dataMap = array(
-            array('jms_serializer.groups', 'group'),
-            array('jms_serializer.version', 1),
-            array('jms_serializer.max_depth_checks', true)
-        );
-
-        $operation->expects($this->any())
+        $operation = $this->getMockBuilder(OperationInterface::class)->getMock();
+        $operation
+            ->expects($this->any())
+            ->method('getResponseType')
+            ->will($this->returnValue(OperationInterface::TYPE_CLASS))
+        ;
+        $operation
+            ->expects($this->any())
+            ->method('getResponseClass')
+            ->will($this->returnValue('ResponseClass'))
+        ;
+        $operation
+            ->expects($this->any())
             ->method('getData')
-            ->will($this->returnValueMap($dataMap));
+            ->will($this->returnValueMap(
+                array(
+                    array('jms_serializer.groups', 'group'),
+                    array('jms_serializer.version', 1),
+                    array('jms_serializer.max_depth_checks', true)
+                )
+            ))
+        ;
 
-        $command = $this->createMock('Guzzle\Service\Command\CommandInterface');
-        $command->expects($this->any())->method('getOperation')->will($this->returnValue($operation));
+        $command = $this->getMockBuilder(CommandInterface::class)->getMock();
+        $command
+            ->expects($this->any())
+            ->method('getOperation')
+            ->will($this->returnValue($operation))
+        ;
 
         $response = new Response(200);
         $response->setBody('body');
 
-        $serializer = $this->createMock('JMS\Serializer\SerializerInterface');
-        $serializer->expects($this->once())->method('deserialize')
-            ->with('body', 'ResponseClass', 'json', $this->equalTo($expectedContext));
+        $serializer = $this->getMockBuilder(SerializerInterface::class)->getMock();
+        $serializer
+            ->expects($this->once())
+            ->method('deserialize')
+            ->with('body', 'ResponseClass', 'json', $this->equalTo($expectedContext))
+        ;
 
-        $parser = new JMSSerializerResponseParser($serializer, $this->createMock('Guzzle\Service\Command\ResponseParserInterface'));
+        $parser = new JMSSerializerResponseParser(
+            $serializer,
+            $this->getMockBuilder(ResponseParserInterface::class)->getMock()
+        );
 
         $ref = new \ReflectionMethod($parser, 'deserialize');
         $ref->setAccessible(true);

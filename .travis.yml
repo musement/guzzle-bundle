@@ -1,28 +1,33 @@
 language: php
 
 php:
-  - 5.3.3
-  - 5.3
-  - 5.4
   - 5.5
   - 5.6
+  - 7.0
+  - 7.1
   - hhvm
 
+sudo: false
+
+cache:
+  directories:
+    - ~/.composer/cache/files
+
 matrix:
+  fast_finish: true
   allow_failures:
     - php: hhvm
 
 env:
-  - SYMFONY_VERSION="2.2.0" GUZZLE_VERSION="3.0.0" SENSIO_FRAMEWORK_EXTRA_VERSION="~2.2"
-  - SYMFONY_VERSION="2.3.x"  GUZZLE_VERSION="~3.0" SENSIO_FRAMEWORK_EXTRA_VERSION="~2.2"
-  - SYMFONY_VERSION="~2.4"  GUZZLE_VERSION="~3.0" SENSIO_FRAMEWORK_EXTRA_VERSION="~3.0"
+  - SYMFONY_VERSION="~2.7" GUZZLE_VERSION="~3.0" SENSIO_FRAMEWORK_EXTRA_VERSION="~3.0"
+  - SYMFONY_VERSION="~3.0" GUZZLE_VERSION="~3.0" SENSIO_FRAMEWORK_EXTRA_VERSION="~3.0"
 
 before_install:
   - composer require symfony/framework-bundle:${SYMFONY_VERSION} --no-interaction --no-update
   - composer require guzzle/guzzle:${GUZZLE_VERSION} --no-interaction --no-update
-  - composer require sensio/framework-extra-bundle:${SENSIO_FRAMEWORK_EXTRA_VERSION} --no-interaction --dev --no-update
+  - composer require sensio/framework-extra-bundle:${SENSIO_FRAMEWORK_EXTRA_VERSION} --no-interaction --no-update
 
 install:
-  - composer install --no-interaction --dev --prefer-source
+  - composer install --no-interaction --prefer-dist
 
 script: ./vendor/bin/phpunit

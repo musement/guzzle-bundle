@@ -11,7 +11,9 @@
 
 namespace Misd\GuzzleBundle\Tests;
 
+use JMS\Serializer\SerializerInterface;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\ResolveDefinitionTemplatesPass;
 use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
@@ -22,7 +24,7 @@ class AbstractTestCase extends \PHPUnit_Framework_TestCase
     protected function getContainer(array $config = array(), KernelInterface $kernel = null)
     {
         if (null === $kernel) {
-            $kernel = $this->createMock('Symfony\Component\HttpKernel\KernelInterface');
+            $kernel = $this->getMockBuilder(KernelInterface::class)->getMock();
             $kernel
                 ->expects($this->any())
                 ->method('getBundles')
@@ -37,13 +39,9 @@ class AbstractTestCase extends \PHPUnit_Framework_TestCase
         $container->setParameter('kernel.cache_dir', sys_get_temp_dir() . '/guzzle');
         $container->setParameter('kernel.bundles', array());
         $container->setParameter('kernel.root_dir', __DIR__ . '/Fixtures');
-        $container->set('monolog.logger', $this->createMock('Symfony\\Bridge\\Monolog\\Logger', array(), array('app')));
-        $container->set('jms_serializer', $this->createMock('JMS\\Serializer\\SerializerInterface'));
+        $container->set('monolog.logger', $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->setMethods(array('app'))->getMock());
+        $container->set('jms_serializer', $this->getMockBuilder(SerializerInterface::class)->getMock());
         $container->set('translator', new \stdClass());
-
-        if (!$container->hasDefinition('translator')) {
-            $container->removeDefinition('jms_serializer.form_error_handler');
-        }
 
         $container->registerExtension($extension);
         $extension->load($config, $container);
